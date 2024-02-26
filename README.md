@@ -9,7 +9,7 @@
 (**************************************************************)
 ```
 
-# Quasi Morphisms for Almost Full relations
+# Quasi Morphisms for Almost Full relations (artifact)
 
 This project is an artifact for a [TYPES 2024](https://types2024.itu.dk/Index.html) submission of the
 same name. The standalone Coq file [`af_morphism.v`](af_morphism.v)
