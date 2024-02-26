@@ -11,17 +11,18 @@
 
 # Quasi Morphisms for Almost Full relations (artifact)
 
-This project is an artifact for a [TYPES 2024](https://types2024.itu.dk/Index.html) submission of the
-same name. The standalone Coq file [`af_morphism.v`](af_morphism.v)
+This repository contains an artifact for a [TYPES 2024](https://types2024.itu.dk/Index.html) 
+submission of the same name. The standalone Coq file [`af_morphism.v`](af_morphism.v)
 contains the developement and is largely commented. It is intented
-to be read and executed within an IDE for Coq such 
-as eg [CoqIDE](https://coq.inria.fr/download) or 
-[vscoq](https://github.com/coq-community/vscoq). Any version
-of Coq starting from `8.13` and upto at least `8.18` should
-be ok.
+to be read and executed within an IDE for Coq such as eg [CoqIDE](https://coq.inria.fr/download) or 
+[vscoq](https://github.com/coq-community/vscoq). Any version of Coq starting from `8.13.0` and 
+upto at least `8.19.0` should be ok to compile and/or review the file [`af_morphism.v`](af_morphism.v).
 
 For further information about Almost Full relations in Coq,
-the following projects may be of interest:
-- [`Kruskal-AlmostFull`](https://github.com/DmxLarchey/Kruskal-AlmostFull)
-- [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman)
-
+the following libraries may be of interest:
+- [`Kruskal-AlmostFull`](https://github.com/DmxLarchey/Kruskal-AlmostFull):
+  general tools and definitions for AF relations and inductive bar predicates,
+  including _surjective relational morphisms_ and Coquand's constructivized
+  Ramsey's theorem;
+- [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman):
+  _quasi-morphisms_ then applied to the proof of Higman's lemma.
