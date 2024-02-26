@@ -11,7 +11,7 @@
 
 # Quasi Morphisms for Almost Full relations
 
-This project is an artifact for a TYPES'2024 submission of the
+This project is an artifact for a [TYPES 2024](https://types2024.itu.dk/Index.html) submission of the
 same name. The standalone Coq file [`af_morphism.v`](af_morphism.v)
 contains the developement and is largely commented. It is intented
 to be read and executed within an IDE for Coq such 
