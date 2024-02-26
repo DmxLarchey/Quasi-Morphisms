@@ -489,41 +489,34 @@ Section Forall2_tools.
   Fact Forall2_equiv R T : (∀ x y, R x y ↔ T x y) → ∀ l m, Forall2 R l m ↔ Forall2 T l m.
   Proof. intros E; split; apply Forall2_mono; intros ? ?; apply E. Qed.
 
-  Fact Forall2_cons_inv R x l y m : Forall2 R (x::l) (y::m) ↔ R x y ∧ Forall2 R l m.
+  (* This one is in the stdlib as of Coq 8.17 *)
+  Fact Forall2_cons_iff R x y l m : Forall2 R (x::l) (y::m) ↔ R x y ∧ Forall2 R l m.
   Proof.
     split.
-    + inversion 1; tauto.
-    + intros []; constructor; auto.
+    + inversion 1; eauto.
+    + intros []; auto.
   Qed.
 
-  Fact Forall2_nil_right R l : Forall2 R l [] ↔ l = [].
+  Fact Forall2_nil_inv_r R l : Forall2 R l [] ↔ l = [].
   Proof.
     split.
     + now inversion 1.
     + intros ->; auto.
   Qed.
 
-  Fact Forall2_cons_right R l y m : Forall2 R l (y::m) ↔ ∃ x l', l = x::l' ∧ R x y ∧ Forall2 R l' m.
+  Fact Forall2_cons_inv_r R l y m : Forall2 R l (y::m) ↔ ∃ x l', l = x::l' ∧ R x y ∧ Forall2 R l' m.
   Proof.
     split.
     + destruct l; inversion 1; eauto.
     + intros (? & ? & -> & []); eauto.
   Qed.
 
-  Fact Forall2_app_right R l m₁ m₂ : Forall2 R l (m₁++m₂) ↔ ∃ l₁ l₂, l = l₁++l₂ ∧ Forall2 R l₁ m₁ ∧ Forall2 R l₂ m₂.
-  Proof.
-    induction m₁ as [ | y m1 IH ] in l |- *; simpl; split.
-    + exists [], l; eauto.
-    + intros (? & ? & -> & H & ?); now inversion H.
-    + intros (x & l' & -> & ? & (? & ? & -> & [])%IH)%Forall2_cons_right.
-      eexists (_::_), _; simpl; eauto.
-    + intros (l1 & l2 & -> & (? & ? & -> & [])%Forall2_cons_right & ?); simpl; eauto.
-  Qed.
+  (* Forall2_app_inv_r is already in the stdlib since Coq 8.13 *)
 
-  Fact Forall2_snoc_right R l y m : Forall2 R l (m++[y]) ↔ ∃ l' x, l = l'++[x] ∧ R x y ∧ Forall2 R l' m.
+  Fact Forall2_snoc_inv_r R l y m : Forall2 R l (m++[y]) ↔ ∃ l' x, l = l'++[x] ∧ R x y ∧ Forall2 R l' m.
   Proof.
     split.
-    + intros (l' & r & -> & ? & (x & ? & -> & ? & ->%Forall2_nil_right)%Forall2_cons_right)%Forall2_app_right; eauto.
+    + intros (l' & r & ? & (x & ? & -> & ? & ->%Forall2_nil_inv_r)%Forall2_cons_inv_r & ->)%Forall2_app_inv_r; eauto.
     + intros (? & ? & -> & []); eauto.
   Qed.
 
@@ -544,7 +537,7 @@ Fact Forall2_map_right X Y Z (R : X → Z → Prop) (f : Y → Z) l m :
 Proof.
   split.
   + revert m; induction l as [ | x l IHl ]; intros [ | y m ]; intros H; try (inversion H; fail); auto.
-    simpl in H; apply Forall2_cons_inv in H as []; constructor; auto.
+    simpl in H; apply Forall2_cons_iff in H as []; constructor; auto.
   + induction 1; simpl; auto.
 Qed.
 
@@ -600,7 +593,7 @@ Section fin_FAN.
       * intros [ <- | [] ]; auto.
     + split; intros Hc.
       * destruct c as [ | x c ]; [ inversion Hc | ].
-        apply Forall2_cons_inv in Hc as (? & ?%IH).
+        apply Forall2_cons_iff in Hc as (? & ?%IH).
         apply list_prod_spec; eauto.
       * apply list_prod_spec in Hc as (? & ? & -> & ? & ?%IH); eauto.
   Qed.
@@ -813,7 +806,7 @@ Section FAN_theorem.
 
   Local Fact Plift_on_FAN_monotone u : monotone (Plift_on_FAN u).
   Proof.
-    intros ? ? Hv ? (? & ? & -> & ? & ?%Hv)%Forall2_cons_right.
+    intros ? ? Hv ? (? & ? & -> & ? & ?%Hv)%Forall2_cons_inv_r.
     now apply HP.
   Qed.
 
@@ -827,7 +820,7 @@ Section FAN_theorem.
       induction w as [ | a w IHw ].
       * constructor 1.
         (* FAN [[]] is empty *)
-        intros ? (_ & _ & _ & [] & _)%Forall2_cons_right.
+        intros ? (_ & _ & _ & [] & _)%Forall2_cons_inv_r.
       * (* We combine IHu and IHv using bar_intersection *)
         specialize (IHu a).
         apply bar_lifted_nil in IHw.
@@ -838,7 +831,7 @@ Section FAN_theorem.
         clear Hu Hw IHu IHw; unfold Plift_on_FAN.
         (* The result follows by mono(tonicity) *)
         apply bar_mono.
-        intros ? [] ? (? & ? & -> & [ <- | ] & ?)%Forall2_snoc_right; eauto.
+        intros ? [] ? (? & ? & -> & [ <- | ] & ?)%Forall2_snoc_inv_r; eauto.
         rewrite <- app_assoc; auto.
   Qed.
 
