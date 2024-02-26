@@ -17,6 +17,6 @@ contains the developement and is largely commented.
 
 For further information about Almost Full relations in Coq,
 the following projects may be of interest:
-- [`Kruskal-AlmostFull`]()
-- [`Kruskal-Higman`]()
+- [`Kruskal-AlmostFull`](https://github.com/DmxLarchey/Kruskal-AlmostFull)
+- [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman)
 
