@@ -8,7 +8,7 @@
 (**************************************************************)
 
 (** This development is an artifact for a TYPES'2024 submission
-    that aims at the presentation of proof for tools that transfer
+    that aims at the presentation of proofs for tools that transfer
     the Almost Full inductive predicate [2] from one relation to
     another relation, using relational morphisms (simple but very
     versatile), or the more complex quasi-morphisms for which
@@ -19,9 +19,9 @@
     complete refactoring of our first proof of Kruskal's tree theorem
     in Coq [4], aimed at avoiding the many redundancies present there.
     Both versions follow the outline of Wim Veldman's intuitionistic
-    proof [1] (that also contains there redundancies). But in the 
-    refactoring, we combine tools that where already present in [1] 
-    (or already in [3] btw) but where not abstracted as a standalone
+    proof [1] (that also contains these redundancies). But in the 
+    refactoring, we combine tools that can already be spotted in [1] 
+    (or already in [3] btw) but were not abstracted as a standalone
     tool explainable by itself, independently of the context of those
     intricate proofs. This notion of quasi-morphism also explains
     nicely the main overhead to tackle the non-decidable case, which
@@ -50,14 +50,14 @@ Require Import List Utf8.
 
 Set Implicit Arguments.
 
-(* Reserved Notations are a parsing and display rules
-   only, the semantics will be defined later.
+(** Reserved Notations are a parsing and display rules
+    only, the semantics will be defined later.
 
-   The connectives ⊥ₜ, ∨ₜ, ∧ₜ, ∃ₜ and ⇄ₜ with a (.)ₜ
-   subscripts and Base-bounded "FOL like" connectives
-   where Base can be globally selected as either Prop
-   or Type. They are used only for parsing, and not
-   for display for reasons explained below. *)
+    The connectives ⊥ₜ, ∨ₜ, ∧ₜ, ∃ₜ and ⇄ₜ with a (.)ₜ
+    subscripts and Base-bounded "FOL like" connectives
+    where Base can be globally selected as either Prop
+    or Type. They are used only for parsing, and not
+    for display for reasons explained below. *)
 
 Reserved Notation "⊥ₜ" (at level 0).
 Reserved Notation "P ∨ₜ Q" (at level 81, right associativity).
@@ -127,10 +127,10 @@ Module Type_bounded.
 
 End Type_bounded.
 
-(** Here the user can choose whether to compile type Type bounded versions
-    or the Prop bounded versions of the results. Thanks to the generic
-    notations defined above, the proofs scripts are "exactly the same",
-    but the Coq computed proof terms differ of course. *) 
+(* Here the user can choose whether to compile type Type bounded versions
+   or the Prop bounded versions of the results. Thanks to the generic
+   notations defined above, the proofs scripts are "exactly the same",
+   but the Coq computed proof terms differ of course. *) 
 Import Type_bounded (* Prop_bounded (* choose one *) *).
 
 (* derived iff notation for the Base bounded *)
@@ -237,7 +237,7 @@ Notation "R ⇈ l" := (rel_lift_list R l).
                       rel_lift_list_mono
                       rel_lift_list_inc : core.
 
-(** af predicate characterezing AF relations inductivelly
+(** af predicate characterezing AF relations inductively
     Notice that it is Base-bounded, hence either Type- or
     Prop-bounded depending on the global choice. *)
 
@@ -346,8 +346,8 @@ Section af_lift_vs_af_sub_rel.
 
   Hypothesis Ra_dec : ∀x, R a x ∨ₜ ¬ R a x.
 
-  (* The one below is more complicated as it involves 
-     build the AF relation 
+  (* The one below is more complicated as it involves
+     building the AF relation 
 
             ⊤₂⇓(R a) +₂ R⇓(λ x, ¬ R a x)
 
@@ -603,10 +603,10 @@ Section fin_FAN.
 
 End fin_FAN.
 
-(* Some examples of explicit FANs *)
+(* (* Some examples of explicit FANs *)
 Eval compute in list_fan [[0;1];[2;3]].
 Eval compute in list_fan [[0;1];[2];[3;4]].
-Eval compute in list_fan [[0;1];[];[2;3]].
+Eval compute in list_fan [[0;1];[];[2;3]]. *)
 
 (** Finitary choice and combinatorial principles, Prop bounded *)
 
@@ -643,7 +643,7 @@ Qed.
     on lw. We need the finiteness of the FAN to apply fin_choice_cst_left.
 
     Notice that it would be trivial to establish it using excluded middle.
-    Classically it holds even for infinitary FANs. *)
+    Classically (XM+Choice) it holds even for infinitary FANs. *)
 
 Theorem list_combi_principle X (P : rel₁ (list X)) (B : rel₁ X) lw :
         (∀c, FAN lw c → P c ∨ ∃x, x ∈ c ∧ B x)
