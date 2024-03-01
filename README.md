@@ -28,6 +28,7 @@ the following libraries may be of interest:
   Ramsey's theorem;
 - [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman):
   _quasi-morphisms_ then applied to the proof of Higman's lemma.
+
 The artifact file [`af_morphism.v`](af_morphism.v) was designed by
 extracting the necessary code from these libraries (so they are __not
 needed__ for the review) and then cleaning up and commenting more specifically.
