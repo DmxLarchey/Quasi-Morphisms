@@ -10,7 +10,7 @@
 (** This development is an artifact for a TYPES'2024 submission
     that aims at the presentation of proofs for tools that transfer
     the Almost Full inductive predicate [2] from one relation to
-    another relation, using relational morphisms (simple but very
+    another relation, using relational morphisms (simple but
     versatile), or the more complex quasi-morphisms for which
     we present both a short proof (in the decidable case), and a
     much more involved proof (using two main tools, see below).
@@ -50,11 +50,11 @@ Require Import List Utf8.
 
 Set Implicit Arguments.
 
-(** Reserved Notations are a parsing and display rules
-    only, the semantics will be defined later.
+(** Reserved Notations are parsing and display rules only,
+    the semantics will be defined later.
 
     The connectives ⊥ₜ, ∨ₜ, ∧ₜ, ∃ₜ and ⇄ₜ with a (.)ₜ
-    subscripts and Base-bounded "FOL like" connectives
+    subscripts are Base-bounded "FOL like" connectives
     where Base can be globally selected as either Prop
     or Type. They are used only for parsing, and not
     for display for reasons explained below. *)
@@ -97,7 +97,7 @@ Reserved Notation "P ⤉ l" (at level 1, left associativity, format "P ⤉ l").
     ASSUMING THE CHOICE Base := Prop.
 
     Notice that those notations are "parsing only"
-    and they do not display with the (.)ₜ. Otherwise,
+    and they do not "display" with the (.)ₜ. Otherwise,
     when Base := Prop, the regular ∃ would be captured
     by that notation and we do not want that. *)
 
@@ -133,13 +133,13 @@ End Type_bounded.
    but the Coq computed proof terms differ of course. *) 
 Import Type_bounded (* Prop_bounded (* choose one *) *).
 
-(* derived iff notation for the Base bounded *)
+(* derived iff notation for the Base bounded connective *)
 Notation "P ⇄ₜ Q" := ((P → Q) ∧ₜ (Q → P))%type (only parsing) : type_scope.
 
-(** Usual notations and hints for lists 
+(** Usual notations and hints for lists: 
     { } for arguments denote that they are flagged 
     as implicit, and usually recovered by unfication
-    within a given context. Writing @cons removes all
+    within a given context. Writing eg @cons removes all
     implicit flags. *)
 
 Import ListNotations.
@@ -151,7 +151,8 @@ Infix "∈" := In.        (* we denote list membership In x l with x ∈ l *)
 #[local] Hint Resolve in_map in_or_app in_cons in_eq : core.
 
 (** Usual notations for unary or binary relations,
-    viewed as Prop bounded predicates *)
+    viewed as Prop bounded predicate. These *do not*
+    depend on the choice of Base. *)
 
 Notation rel₁ X := (X → Prop).
 Notation "⊥₁" := (λ _, False).
@@ -260,6 +261,9 @@ Proof.
   apply af_mono with (2 := IHR (f x)); simpl; firstorder.
 Qed. 
 
+(** Now come the easy to prove but but versatile to use
+    surjective relation morphisms *)
+
 Section af_rel_morph.
 
   Variables (X Y : Type) (f : X → Y → Prop)
@@ -301,6 +305,7 @@ Proof.
   + intros ? ? [] [] -> ->; simpl; auto.
 Qed.
 
+(* For this one, a morphism will not do. *)
 Fact af_full_left X {Y} {R : rel₂ Y} : af R → @af (X+Y) (⊤₂ +₂ R).
 Proof.
   induction 1 as [ R HR | R _ IHR ].
@@ -319,17 +324,17 @@ Qed.
 
       Showing the more general closure property of AF under direct sums
 
-                  af R → af T → af (R +₂ T)
+             af_sum :    af R → af T → af (R +₂ T)
 
       involves Coquand's constructive version of Ramsey's theorem, ie
 
-                  af R → af T → af (R ∩₂ T)
+             af_inter :  af R → af T → af (R ∩₂ T)
 
       and this is an "important tool" but it is not necessary in here.
       We just need  af R → af (⊤₂ +₂ R) which is much easier to establish
       as justified above in af_full_left.
 
-      Btw the proof of closure under +₂ is obtained via Ramsey by 
+      Btw the proof of af_sum (closure under +₂) is obtained via Ramsey by 
       mono(tonicity) and the inclusion (R+₂⊤₂) ∩₂ (⊤₂+₂R) ⊆₂ R+₂T. *)
 
 Section af_lift_vs_af_sub_rel.
@@ -360,7 +365,7 @@ Section af_lift_vs_af_sub_rel.
     af rel morph (λ x y,
       match x with
       | inl x => proj1_sig x = y   (* we cannot factor here because the two *)
-      | inr x => proj1_sig x = y   (* proj1_sig is not over the same types  *)
+      | inr x => proj1_sig x = y   (* proj1_sig are not over the same types  *)
       end).
     + intros y; destruct (Ra_dec y) as [ Hy | Hy ].
       * now exists (inl (exist _ y Hy)).
@@ -429,13 +434,13 @@ Section af_quasi_morphism_decidable.
             (* if every analysis of y is exceptional then y must T-embed y0 *)
             (excep_embed : ∀y, is_ana y ⊆₁ E → T y₀ y).
 
-  (** We want to conclude: af R → af T↑y₀.
+  (** We want to derive: af R → af T↑y₀.
 
-      In this simpler case, we further assume decidability of T y₀ and E.
+      In this simpler case, we further assume decidability of (T y₀) and E.
       Both T and E are actually defined using a common the source embedding
       (which is not R btw), so in the end their decidability comes from that
       property of the source embeding. But this depends on how T and E are 
-      build. *)
+      build, so we state the abstract the property here. *)
 
   Hypothesis (Ty₀_dec : ∀y, T y₀ y ∨ₜ ¬ T y₀ y).
   Hypothesis (E_dec : ∀x, E x ∨ₜ ¬ E x).
@@ -549,8 +554,13 @@ Proof. rewrite Forall2_xchg, Forall2_map_right, Forall2_xchg; tauto. Qed.
    ie, the lists c = [c1;...;cn] such that for any i, ci ∈ wi *)
 Notation FAN lw := (λ c, Forall2 (λ x l, x ∈ l) c lw).
 
-(** Explicit construction of the FAN on list (of lists) 
-    just to establish finiteness *)
+(** Explicit construction of the FAN on list (of lists). This is
+    just needed to establish finiteness of the FAN. In the Kruskal-Higman
+    project, this finiteness property is established using tools of 
+    the Kruskal-Finite prject, and avoids the explicit list_prod/list_fan 
+    completely. But importing those tools here would be overkill compared
+    to the short explicit construction, of which we do not need many
+    properties. *)
 
 Section list_prod.
 
@@ -630,6 +640,7 @@ Proof. intro; destruct (list_choice Q (λ _, P) l); firstorder. Qed.
 
 Arguments list_choice_cst_left {_}.
 
+(* P ∨ (.) commutes with finite univ. quantification *)
 Fact fin_choice_cst_left X F P (Q : X → Prop) :
         fin F → (∀x, F x → P ∨ Q x) → P ∨ ∀x, F x → Q x.
 Proof.
@@ -785,7 +796,7 @@ End bar_map_inv.
 Section FAN_theorem.
 
   (** That proof of the FAN theorem on inductive bars is derived
-      by significantly reworked from Daniel Fridlender's paper
+      but significantly reworked from Daniel Fridlender's paper
 
       https://www.brics.dk/RS/98/39/BRICS-RS-98-39.pdf
 
@@ -793,7 +804,10 @@ Section FAN_theorem.
 
       In particular, we completely avoid using an explicit
       computation of the FAN like "list_fan" above
-      and instead work directly with the FAN predicate. *)
+      and instead work directly with the FAN predicate.
+      Notice the the finiteness of the FAN is not needed
+      in this proof, but is needed in the proof of the
+      combinatorial principle list_combi_principle. *)
 
   Variables (X : Type) (P : rel₁ (list X)) (HP : monotone P).
 
@@ -860,12 +874,14 @@ Section good.
 
   Implicit Type (R T : rel₂ X).
 
-  (* l = [x1;...;xn] is good iff R xj xi for some i < j *)
+  (* l = [x1;...;xn] is good iff R xⱼ xᵢ for some i < j *)
   Inductive good R : list X → Prop :=
     | good_stop x y l : y ∈ l → R y x → good R (x::l)
     | good_skip x l : good R l → good R (x::l).
 
   Hint Constructors good : core.
+
+  (** Basic properties of good *)
 
   Fact good_monotone R : monotone (good R).
   Proof. apply good_skip. Qed.
@@ -919,6 +935,8 @@ Section good.
       now rewrite <- app_assoc.
   Qed.
 
+  (** Now properties of bar good *)
+
   Local Fact bar_lift_bar_lifted R x : bar (good R↑x) ⊆₁ (bar (good R))⤉[x].
   Proof. induction 1; eauto. Qed.
 
@@ -946,6 +964,8 @@ Section good.
   Proof. induction 1; simpl; eauto. Qed.
 
   Hint Resolve good_rel_lift_list_full : core.
+
+  (** And now the link between af and (bar good) *)
 
   Fact bar_good_af R l : bar (good R) l → af (R⇈l).
   Proof. induction 1; auto. Qed.
@@ -980,6 +1000,10 @@ End good.
 Arguments good {X}.
 #[local] Hint Constructors good : core.
 
+(** We conclude with the quasi morphism result, here in the
+    general setting where we do not assume decidability 
+    properties for T and E. *)
+
 Section af_quasi_morphism.
 
   Variables (X Y : Type) (ev : X → Y).
@@ -991,7 +1015,7 @@ Section af_quasi_morphism.
             (ev_qmorph : ∀ x₁ x₂, R x₁ x₂ → T (ev x₁) (ev x₂) ∨ E x₁)
             (excep_embed : ∀y, is_ana y ⊆₁ E → T y₀ y).
 
-  (** We want to conclude: af R → af T↑y₀
+  (** We want to derive: af R → af T↑y₀
       We deal with the general case where
       neither T↑y₀ nor E is assumed decidable *)
 
