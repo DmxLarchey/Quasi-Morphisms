@@ -244,25 +244,20 @@ Notation "R ⇈ l" := (rel_lift_list R l).
 
 Inductive af {X} (R : rel₂ X) : Base :=
   | af_full : (∀ x y, R x y) → af R
-  | af_lift : (∀ a, af (R↑a)) → af R.
+  | af_lift : (∀ a, af R↑a) → af R.
 
 #[local] Hint Constructors af : core.
 
 Fact af_mono X (R T : rel₂ X) : R ⊆₂ T → af R → af T.
 Proof. intros HT; induction 1 in T, HT |- *; eauto. Qed.
 
-Fact af_inv X (R : rel₂ X) : af R → ∀x, af (R↑x).
+Fact af_inv X (R : rel₂ X) : af R → ∀x, af R↑x.
 Proof. intros []; auto. Qed.
 
-Fact af_map X Y (f : X → Y) (R : rel₂ Y) : af R → af (λ x₁ x₂, R (f x₁) (f x₂)).
-Proof.
-  induction 1 as [ | R _ IHR ]; eauto.
-  constructor 2; intros x.
-  apply af_mono with (2 := IHR (f x)); simpl; firstorder.
-Qed. 
+(** Now come the easy to prove but versatile to use
+    surjective relation morphisms 
 
-(** Now come the easy to prove but but versatile to use
-    surjective relation morphisms *)
+    This generalizes af_map and af_comap (see below). *)
 
 Section af_rel_morph.
 
@@ -281,8 +276,8 @@ Section af_rel_morph.
     induction 1 as [ | R _ IHR ]; intros T HT.
     + constructor 1; intros y1 y2.
       destruct (Hf y1); destruct (Hf y2); eauto.
-    + constructor 2; intros y.
-      destruct (Hf y) as (x & ?).
+    + constructor 2; intros a.
+      destruct (Hf a) as (x & ?).
       apply (IHR x); firstorder.
   Qed.
 
@@ -296,6 +291,17 @@ Tactic Notation "af" "rel" "morph" uconstr(g) :=
   match goal with
   |- af _ → af _ => apply af_rel_morph with (f := g)
   end.
+
+(* af_map (a generalization of af_comap, see below)
+   is itself a particular case of af_rel_morph. *)
+Remark af_map X Y (f : Y → X) (R : rel₂ X) (T : rel₂ Y) :
+        (∀ y₁ y₂, R (f y₁) (f y₂) → T y₁ y₂)
+      → af R → af T.
+Proof. intro; af rel morph (λ x y, f y = x); intros; subst; eauto. Qed.
+
+(* af_comap appears already in [2], instance of af_map *)
+Remark af_comap X Y (f : X → Y) (R : rel₂ Y) : af R → af (λ x₁ x₂, R (f x₁) (f x₂)).
+Proof. apply af_map with (f := f); trivial. Qed.
 
 (* Trivial using a relational morphism *)
 Fact af_af_sub_rel X P (R : rel₂ X) : af R → af R⇓P.
