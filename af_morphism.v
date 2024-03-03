@@ -248,9 +248,6 @@ Inductive af {X} (R : rel₂ X) : Base :=
 
 #[local] Hint Constructors af : core.
 
-Fact af_mono X (R T : rel₂ X) : R ⊆₂ T → af R → af T.
-Proof. intros HT; induction 1 in T, HT |- *; eauto. Qed.
-
 Fact af_inv X (R : rel₂ X) : af R → ∀x, af R↑x.
 Proof. intros []; auto. Qed.
 
@@ -292,16 +289,20 @@ Tactic Notation "af" "rel" "morph" uconstr(g) :=
   |- af _ → af _ => apply af_rel_morph with (f := g)
   end.
 
-(* af_map (a generalization of af_comap, see below)
-   is itself a particular case of af_rel_morph. *)
+(* af rel morph generalizes af_mono *)
+Fact af_mono X (R T : rel₂ X) : R ⊆₂ T → af R → af T.
+Proof. intro; af rel morph eq; intros; subst; eauto. Qed.
+
+(* af rel morph generalizes af_comap *)
+Remark af_comap X Y (f : X → Y) (R : rel₂ Y) : af R → af (λ x₁ x₂, R (f x₁) (f x₂)).
+Proof. af rel morph (λ x y, f y = x); intros; subst; eauto. Qed.
+
+(* af rel morph also generalizes af_map (which itself
+   slightly generalizes af_comap) *)
 Remark af_map X Y (f : Y → X) (R : rel₂ X) (T : rel₂ Y) :
         (∀ y₁ y₂, R (f y₁) (f y₂) → T y₁ y₂)
       → af R → af T.
 Proof. intro; af rel morph (λ x y, f y = x); intros; subst; eauto. Qed.
-
-(* af_comap appears already in [2], instance of af_map *)
-Remark af_comap X Y (f : X → Y) (R : rel₂ Y) : af R → af (λ x₁ x₂, R (f x₁) (f x₂)).
-Proof. apply af_map with (f := f); trivial. Qed.
 
 (* Trivial using a relational morphism *)
 Fact af_af_sub_rel X P (R : rel₂ X) : af R → af R⇓P.
