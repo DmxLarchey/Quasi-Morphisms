@@ -372,7 +372,7 @@ Section af_lift_vs_af_sub_rel.
     af rel morph (λ x y,
       match x with
       | inl x => proj1_sig x = y   (* we cannot factor here because the two *)
-      | inr x => proj1_sig x = y   (* proj1_sig are not over the same types  *)
+      | inr x => proj1_sig x = y   (* proj1_sig are not over the same types *)
       end).
     + intros y; destruct (Ra_dec y) as [ Hy | Hy ].
       * now exists (inl (exist _ y Hy)).
@@ -402,7 +402,7 @@ Fact list_choice_Base X (P Q : rel₁ X) (l : list X) :
 Proof.
   induction l as [ | x l IHl ]; intros Hl.
   + left; simpl; tauto.
-  + destruct IHl as [ H | (y & ? & ?) ].
+  + destruct IHl as [ H | (y & []) ].
     * intros; apply Hl; simpl; auto.
     * destruct (Hl x); simpl; auto.
       - left; intros ? [ <- | ]; auto.
