@@ -25,7 +25,7 @@
     tool explainable by itself, independently of the context of those
     intricate proofs. This notion of quasi-morphism also explains
     nicely the main overhead to tackle the non-decidable case, which
-    is avoided in eg [5] possibly for the reasons that it involves
+    is not considered in eg [5] possibly for the reasons that it involves
     both the FAN theorem for inductive bars and a finitary combinatorial
     principle (see eg [1] in proof of thm 7.1 p241). Another reason
     is that the non-decidable case works only with negations free
@@ -128,7 +128,8 @@ Module Type_bounded.
 End Type_bounded.
 
 (* Here the user can choose whether to compile type Type bounded versions
-   or the Prop bounded versions of the results. Thanks to the generic
+   or the Prop bounded versions of the results (notice that only some results
+   depend on the choice Prop vs. Type for Base). Thanks to the generic
    notations defined above, the proofs scripts are "exactly the same",
    but the Coq computed proof terms differ of course. *) 
 Import Type_bounded (* Prop_bounded (* choose one *) *).
@@ -167,8 +168,8 @@ Notation "P ⊆₂ Q" := (∀ x y, P x y → Q x y).
 Notation "P ∩₂ Q" := (λ x y, P x y ∧ Q x y).
 
 (* The direct sum of two binary relations *)
-Definition rel_sum₂ {X Y} (R : rel₂ X) (T : rel₂ Y) (p q : X+Y) :=
-  match p, q with
+Definition rel_sum₂ {X Y} (R : rel₂ X) (T : rel₂ Y) : rel₂ (X + Y) :=
+  λ p q, match p, q with
   | inl x₁, inl x₂ => R x₁ x₂
   | inr y₁, inr y₂ => T y₁ y₂
   | _     , _      => False
@@ -260,11 +261,11 @@ Section af_rel_morph.
 
   Variables (X Y : Type) (f : X → Y → Prop)
             (R : rel₂ X) (T : rel₂ Y)
-            (Hf : ∀y, ∃ₜ x, f x y)          (** f is (strongly) surjective *)
+            (Hf : ∀ y, ∃ₜ x, f x y)         (** f is (strongly) surjective *)
             (HRT : ∀ x₁ x₂ y₁ y₂, f x₁ y₁
                                 → f x₂ y₂
                                 → R x₁ x₂
-                                → T y₁ y₂)  (** f is a morphism form R to S *)
+                                → T y₁ y₂)  (** f is a morphism form R to T *)
             .
 
   Theorem af_rel_morph : af R → af T.
@@ -297,8 +298,7 @@ Proof. intro; af rel morph eq; intros; subst; eauto. Qed.
 Remark af_comap X Y (f : X → Y) (R : rel₂ Y) : af R → af (λ x₁ x₂, R (f x₁) (f x₂)).
 Proof. af rel morph (λ x y, f y = x); intros; subst; eauto. Qed.
 
-(* af rel morph also generalizes af_map (which itself
-   slightly generalizes af_comap) *)
+(* af rel morph also generalizes af_map, which itself slightly generalizes af_comap *)
 Remark af_map X Y (f : Y → X) (R : rel₂ X) (T : rel₂ Y) :
         (∀ y₁ y₂, R (f y₁) (f y₂) → T y₁ y₂)
       → af R → af T.
@@ -312,15 +312,15 @@ Proof.
   + intros ? ? [] [] -> ->; simpl; auto.
 Qed.
 
-(* For this one, a morphism will not do. *)
+(* For this one, a morphism will "not" do. *)
 Fact af_full_left X {Y} {R : rel₂ Y} : af R → @af (X+Y) (⊤₂ +₂ R).
 Proof.
   induction 1 as [ R HR | R _ IHR ].
   + do 2 (constructor 2; intros []);
       constructor 1; intros [] []; simpl; auto.
-  + constructor 2; intros [x|y].
-    * constructor 2; intros [x'|y'].
-      - constructor 1; intros [] []; simpl; auto.
+  + constructor 2; intros [|y].
+    * constructor 2; intros [|y'].
+      - constructor 1; simpl; auto.
       - generalize (IHR y'); apply af_mono.
         intros [] []; simpl; tauto.
     * generalize (IHR y); apply af_mono.
@@ -341,8 +341,8 @@ Qed.
       We just need  af R → af (⊤₂ +₂ R) which is much easier to establish
       as justified above in af_full_left.
 
-      Btw the proof of af_sum (closure under +₂) is obtained via Ramsey by 
-      mono(tonicity) and the inclusion (R+₂⊤₂) ∩₂ (⊤₂+₂R) ⊆₂ R+₂T. *)
+      Btw the proof of af_sum (closure under +₂) is obtained via Ramsey by
+      mono(tonicity) and the inclusion (R+₂⊤₂) ∩₂ (⊤₂+₂T) ⊆₂ R+₂T. *)
 
 Section af_lift_vs_af_sub_rel.
 
@@ -478,12 +478,11 @@ Print Assumptions af_quasi_morphism_decidable.
 
 (** For the general (non-decidable) case of the Quasi Morphism Theorem, 
     we need many more tools to achieve the proof. Mainly
-
-      - besides extensions of the List library tools (mainly Forall2)
-      - list based FANS and finitary combinatorial principle on FANS 
-      - the bar inductive predicate and the FAN theorem for inductive bars
-      - the inductive good predicate for lists and the equivalence
-        between af R and bar (good R) []. *)
+    - besides extensions of the List library tools (mainly Forall2)
+    - list based FANS and finitary combinatorial principle on FANS 
+    - the bar inductive predicate and the FAN theorem for inductive bars
+    - the inductive good predicate for lists and the equivalence
+      between af R and bar (good R) []. *)
 
 (** Extra tools for List.Forall2 *)
 
@@ -557,14 +556,14 @@ Fact Forall2_map_left X Y Z (R : Y → Z → Prop) (f : X → Y) l m :
       Forall2 R (map f l) m ↔ Forall2 (λ x z, R (f x) z) l m.
 Proof. rewrite Forall2_xchg, Forall2_map_right, Forall2_xchg; tauto. Qed.
 
-(* The FAN of lw is the collection of choice sequences in lw = [w1;...;wn]
-   ie, the lists c = [c1;...;cn] such that for any i, ci ∈ wi *)
+(* The FAN of lw is the collection of choice sequences in lw = [w₁;...;wₙ]
+   ie, the lists c = [c₁;...;cₙ] such that for any i, cᵢ ∈ wᵢ *)
 Notation FAN lw := (λ c, Forall2 (λ x l, x ∈ l) c lw).
 
 (** Explicit construction of the FAN on list (of lists). This is
     just needed to establish finiteness of the FAN. In the Kruskal-Higman
     project, this finiteness property is established using tools of 
-    the Kruskal-Finite prject, and avoids the explicit list_prod/list_fan 
+    the Kruskal-Finite project, and avoids the explicit list_prod/list_fan 
     completely. But importing those tools here would be overkill compared
     to the short explicit construction, of which we do not need many
     properties. *)
@@ -627,7 +626,9 @@ Eval compute in list_fan [[0;1];[];[2;3]]. *)
 
 (** Finitary choice and combinatorial principles, Prop bounded *)
 
-(* The same Ltac proof script as "list_choice_Base" above *)
+(* The same Ltac proof script as "list_choice_Base" above
+   but this one has to be Prop-bounded whatever choice 
+   for Base. *)
 Lemma list_choice {X} (P Q : X → Prop) l :
         (∀x, x ∈ l → P x ∨ Q x)
       → (∀x, x ∈ l → P x) ∨ ∃x, x ∈ l ∧ Q x.
@@ -647,8 +648,8 @@ Proof. intro; destruct (list_choice Q (λ _, P) l); firstorder. Qed.
 
 Arguments list_choice_cst_left {_}.
 
-(* P ∨ (.) commutes with finite univ. quantification *)
-Fact fin_choice_cst_left X F P (Q : X → Prop) :
+(* P ∨ (.) commutes with finite universal quantification *)
+Fact fin_choice_cst_left X P (F Q : X → Prop) :
         fin F → (∀x, F x → P ∨ Q x) → P ∨ ∀x, F x → Q x.
 Proof.
   intros (l & Hl) HPQ.
@@ -658,10 +659,14 @@ Proof.
 Qed.
 
 (** The proof of this finitary combinatorial principle is by induction
-    on lw. We need the finiteness of the FAN to apply fin_choice_cst_left.
+    on lw. We need the finiteness of the FAN to apply fin_choice_cst_left,
+    and this is the "only" reason why we explicitly constructed list_fan.
+    We could have done otherwise by importing tools from Kruskal-Finite
+    but that would not have been shorter.
 
-    Notice that it would be trivial to establish it using excluded middle.
-    Classically (XM+Choice) it holds even for infinitary FANs. *)
+    Notice that this combinatorial principle would be trivial to establish
+    using excluded middle. Classically (XM+Choice) it holds even for 
+    infinitary FANs. *)
 
 Theorem list_combi_principle X (P : rel₁ (list X)) (B : rel₁ X) lw :
         (∀c, FAN lw c → P c ∨ ∃x, x ∈ c ∧ B x)
@@ -674,7 +679,7 @@ Proof.
         apply fin_choice_cst_left.
         + apply fin_FAN.
         + intros c Hc.
-          destruct (HPB (x::c)) as [ | (? & [<- | ] & ?) ]; eauto. }
+          destruct (HPB (x::c)) as [ | (? & [<-|] & ?) ]; eauto. }
     apply list_choice in H as [ | (x & ? & [ (c & []) | (m & []) ]%IHlw) ].
     * right; exists w; eauto.
     * left; exists (x::c); eauto.
@@ -814,7 +819,7 @@ Section FAN_theorem.
       and instead work directly with the FAN predicate.
       Notice the the finiteness of the FAN is not needed
       in this proof, but is needed in the proof of the
-      combinatorial principle list_combi_principle. *)
+      combinatorial principle list_combi_principle above. *)
 
   Variables (X : Type) (P : rel₁ (list X)) (HP : monotone P).
 
@@ -852,7 +857,7 @@ Section FAN_theorem.
         clear Hu Hw IHu IHw; unfold Plift_on_FAN.
         (* The result follows by mono(tonicity) *)
         apply bar_mono.
-        intros ? [] ? (? & ? & -> & [ <- | ] & ?)%Forall2_snoc_inv_r; eauto.
+        intros ? [] ? (? & ? & -> & [<-|] & ?)%Forall2_snoc_inv_r; eauto.
         rewrite <- app_assoc; auto.
   Qed.
 
@@ -881,7 +886,7 @@ Section good.
 
   Implicit Type (R T : rel₂ X).
 
-  (* l = [x1;...;xn] is good iff R xⱼ xᵢ for some i < j *)
+  (* l = [x₁;...;xₙ] is good iff R xⱼ xᵢ for some i < j *)
   Inductive good R : list X → Prop :=
     | good_stop x y l : y ∈ l → R y x → good R (x::l)
     | good_skip x l : good R l → good R (x::l).
@@ -936,7 +941,7 @@ Section good.
 
   Fact good_rel_lift_list_good_lifted R l : good (R⇈l) ⊆₁ (good R)⤉l.
   Proof.
-    induction l as [ | x l IHl ]; simpl; intros m Hm.
+    induction l as [ | x l ]; simpl; intros m ?.
     + now rewrite app_nil_r.
     + replace (m++x::l) with ((m++[x])++l); auto.
       now rewrite <- app_assoc.
@@ -1040,7 +1045,7 @@ Section af_quasi_morphism.
     apply Forall2_equiv; intros ? ?; rewrite ana_spec; tauto.
   Qed.
 
-  (* If a list is R-good then its evaluation is T-good unless it meets E 
+  (* If a list is R-good then its evaluation is T-good unless it meets E
      This extends the ev_qmorph property to good sequences *)
   Local Fact ev_good_or_exceptional lx :
          good R lx → good T (map ev lx) ∨ ∃x, x ∈ lx ∧ E x.
@@ -1073,7 +1078,7 @@ Section af_quasi_morphism.
       now intros ? ?%ana_spec%H2.
   Qed.
 
-  (* The previous results lifted to bar *)
+  (* The previous result lifted to bar *)
   Local Corollary bar_AW_good_lifted : bar AW ⊆₁ (bar (good T))⤉[y₀].
   Proof.
     intros ly Hly; apply bar_lifted_iff.
@@ -1089,7 +1094,7 @@ Section af_quasi_morphism.
   Hint Resolve good_skip bar_goodR_nil : core.
 
   (* By the FAN theorem, since R is af, all sequences
-     will uniformly analyse well *)
+     are bound to uniformly analyse well *)
   Local Lemma bar_AW_nil : bar AW [].
   Proof.
     apply bar_map_inv with (P := λ lw, FAN lw ⊆₁ good R),
