@@ -239,7 +239,7 @@ Notation "R ⇈ l" := (rel_lift_list R l).
                       rel_lift_list_mono
                       rel_lift_list_inc : core.
 
-(** af predicate characterezing AF relations inductively
+(** af predicate characterizing AF relations inductively
     Notice that it is Base-bounded, hence either Type- or
     Prop-bounded depending on the global choice. *)
 
@@ -253,7 +253,7 @@ Fact af_inv X (R : rel₂ X) : af R → ∀x, af R↑x.
 Proof. intros []; auto. Qed.
 
 (** Now come the easy to prove but versatile to use
-    surjective relation morphisms 
+    surjective relational morphisms.
 
     This generalizes af_map and af_comap (see below). *)
 
@@ -312,7 +312,7 @@ Proof.
   + intros ? ? [] [] -> ->; simpl; auto.
 Qed.
 
-(* For this one, a morphism will "not" do. *)
+(* For this one, a morphism will "not" be do the job. *)
 Fact af_full_left X {Y} {R : rel₂ Y} : af R → @af (X+Y) (⊤₂ +₂ R).
 Proof.
   induction 1 as [ R HR | R _ IHR ].
@@ -327,22 +327,23 @@ Proof.
       intros [] []; simpl; tauto.
 Qed.
 
-(** Remark:
+(** Side remarks:
 
-      Showing the more general closure property of AF under direct sums
+    Showing the more general closure property of AF under direct sums
 
              af_sum :    af R → af T → af (R +₂ T)
 
-      involves Coquand's constructive version of Ramsey's theorem, ie
+    involves Coquand's constructive version of Ramsey's theorem, ie
 
              af_inter :  af R → af T → af (R ∩₂ T)
 
-      and this is an "important tool" but it is not necessary in here.
-      We just need  af R → af (⊤₂ +₂ R) which is much easier to establish
-      as justified above in af_full_left.
+    and this is an "important tool" but it is not necessary in here.
+    We just need af R → af (⊤₂ +₂ R) which is much easier to establish
+    as justified above in af_full_left.
 
-      Btw the proof of af_sum (closure under +₂) is obtained via Ramsey by
-      mono(tonicity) and the inclusion (R+₂⊤₂) ∩₂ (⊤₂+₂T) ⊆₂ R+₂T. *)
+    Moreover, the proof of af_sum (closure under +₂) is obtained via Ramsey
+    by mono(tonicity) and the inclusion (R+₂⊤₂) ∩₂ (⊤₂+₂T) ⊆₂ R+₂T.
+*)
 
 Section af_lift_vs_af_sub_rel.
 
@@ -363,7 +364,7 @@ Section af_lift_vs_af_sub_rel.
 
             ⊤₂⇓(R a) +₂ R⇓(λ x, ¬ R a x)
 
-     but also uses a relational morphism to get 
+     but also uses a relational morphism to get
      a short proof below. *)
   Theorem af_sub_rel_af_lift_dec : af R⇓(λ x, ¬ R a x) → af R↑a.
   Proof.
@@ -388,8 +389,8 @@ Section af_lift_vs_af_sub_rel.
 
 End af_lift_vs_af_sub_rel.
 
-(** Finiteness (as computable listability) of a unary relation.
-    A predicate P : _ → Prop is fin(inite) if one can compute
+(** Finiteness (as "computable listability") of a unary relation.
+    A predicate P : _ → Prop is fin(inite) if one can Coq-compute
     a list collecting its span. *)
 
 Definition fin {X} (P : rel₁ X) := {l | ∀x, P x ↔ x ∈ l}.
