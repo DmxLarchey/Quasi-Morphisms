@@ -11,8 +11,10 @@
 
 # Quasi Morphisms for Almost Full relations (artifact)
 
-This repository contains the artifact for a [TYPES 2024](https://types2024.itu.dk/Index.html) 
-[submission of the same name](https://members.loria.fr/DLarchey/files/papers/types2024.pdf).
+This repository contains the artifact for the submission
+[_Quasi Morphisms for Almost Full relations_](https://members.loria.fr/DLarchey/files/papers/types2024.pdf)
+to the [TYPES 2024](https://types2024.itu.dk/Index.html) conference.
+
 The standalone Coq file [`af_morphism.v`](af_morphism.v)
 contains the developement and is largely commented. It has minimal dependencies, only on the standard 
 library (distributed with Coq), and only on the `List` and `Utf8` modules within the standard library. 
