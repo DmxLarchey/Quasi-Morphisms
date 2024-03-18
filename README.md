@@ -32,7 +32,12 @@ the following libraries may be of interest:
   including _surjective relational morphisms_ and Coquand's constructivized
   Ramsey's theorem;
 - [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman):
-  _quasi-morphisms_ then applied to the proof of Higman's lemma.
+  _quasi-morphisms_ then applied to the proof of Higman's lemma;
+- [`Kruskal-Veldman`](https://github.com/DmxLarchey/Kruskal-Veldman):
+  the proof of Wim Veldman's variant of Kruskal's tree theorem 
+  adapted to type theory makes a central use of quasi-morphisms
+  but in a more complicated setting compare to [`Kruskal-Higman`](https://github.com/DmxLarchey/Kruskal-Higman)
+  above.
 
 The artifact file [`af_morphism.v`](af_morphism.v) was designed by
 extracting the necessary code from these libraries (so they are __not
