@@ -7,7 +7,7 @@
 (*        Mozilla Public License Version 2.0, MPL-2.0         *)
 (**************************************************************)
 
-(** This development is an artifact for a TYPES'2024 submission
+(** This development is an artifact for a TYPES'2024 abstract
     that aims at the presentation of proofs for tools that transfer
     the Almost Full inductive predicate [2] from one relation to
     another relation, using relational morphisms (simple but
@@ -134,12 +134,12 @@ End Type_bounded.
    but the Coq computed proof terms differ of course. *) 
 Import Type_bounded (* Prop_bounded (* choose one *) *).
 
-(* derived iff notation for the Base bounded connective *)
+(* Derived iff notation for the Base bounded connective. *)
 Notation "P ⇄ₜ Q" := ((P → Q) ∧ₜ (Q → P))%type (only parsing) : type_scope.
 
 (** Usual notations and hints for lists: 
     { } for arguments denote that they are flagged 
-    as implicit, and usually recovered by unfication
+    as implicit, and usually recovered by unification
     within a given context. Writing eg @cons removes all
     implicit flags. *)
 
@@ -182,6 +182,7 @@ Notation "R +₂ T" := (rel_sum₂ R T).
 
 Definition sub_rel X (P : rel₁ X) (R : rel₂ X) : rel₂ {x | P x} :=
   λ x y, R (proj1_sig x) (proj1_sig y).
+
 Arguments sub_rel {X} P R /.   (* the /. controls the simpl tactic *)
 Notation "R ⇓ P" := (sub_rel P R).
 
@@ -195,6 +196,7 @@ Section lift.
 
   (* Lifting by a single value a *)
   Definition rel_lift R a := λ x y, R x y ∨ R a x.
+
   Notation "R ↑ a" := (rel_lift R a).
 
   Fact rel_lift_inc R a : R ⊆₂ R↑a.
@@ -261,11 +263,11 @@ Section af_rel_morph.
 
   Variables (X Y : Type) (f : X → Y → Prop)
             (R : rel₂ X) (T : rel₂ Y)
-            (Hf : ∀ y, ∃ₜ x, f x y)         (** f is (strongly) surjective *)
+            (Hf : ∀ y, ∃ₜ x, f x y)         (* f is (strongly) surjective *)
             (HRT : ∀ x₁ x₂ y₁ y₂, f x₁ y₁
                                 → f x₂ y₂
                                 → R x₁ x₂
-                                → T y₁ y₂)  (** f is a morphism form R to T *)
+                                → T y₁ y₂)  (* f is a morphism form R to T *)
             .
 
   Theorem af_rel_morph : af R → af T.
@@ -390,7 +392,7 @@ Section af_lift_vs_af_sub_rel.
 End af_lift_vs_af_sub_rel.
 
 (** Finiteness (as "computable listability") of a unary relation.
-    A predicate P : _ → Prop is fin(inite) if one can Coq-compute
+    A predicate P : _ → Prop is fin(ite) if one can Coq-compute
     a list collecting its span. *)
 
 Definition fin {X} (P : rel₁ X) := {l | ∀x, P x ↔ x ∈ l}.
@@ -718,9 +720,9 @@ Section bar.
   Fact bar_idem P Q : P ⊆₁ bar Q → bar P ⊆₁ bar Q.
   Proof. induction 2; auto. Qed.
 
-  (** Do not confuse this result with Coquand's version
-      of Ramsey's theorem because good (R ∩₂ T) is
-      NOT THE SAME as good R ∩₁ good T *)
+  (* Do not confuse this result with Coquand's version
+     of Ramsey's theorem because good (R ∩₂ T) is
+     NOT THE SAME as good R ∩₁ good T *)
   Fact bar_intersection P Q :
           monotone P → monotone Q
         → ∀l, bar P l → bar Q l → bar (P ∩₁ Q) l.
@@ -777,8 +779,8 @@ Section bar_relmap.
 
   Variables (X Y : Type) (f : X → Y → Prop)
             (R : rel₁ (list X)) (T : rel₁ (list Y))
-            (Hf : ∀y, ∃ₜ x, f x y)                     (** f is surjective *)
-            (HRT : ∀ l m, Forall2 f l m → R l → T m)   (** f is a morphism form R to T *)
+            (Hf : ∀y, ∃ₜ x, f x y)                     (* f is surjective *)
+            (HRT : ∀ l m, Forall2 f l m → R l → T m)   (* f is a morphism form R to T *)
             .
 
   Theorem bar_rel_morph l m : Forall2 f l m → bar R l → bar T m.
@@ -818,9 +820,9 @@ Section FAN_theorem.
       In particular, we completely avoid using an explicit
       computation of the FAN like "list_fan" above
       and instead work directly with the FAN predicate.
-      Notice the the finiteness of the FAN is not needed
-      in this proof, but is needed in the proof of the
-      combinatorial principle list_combi_principle above. *)
+      Notice the finiteness of the FAN is not needed in this 
+      proof, but is needed in the proof of the combinatorial
+      principle list_combi_principle above. *)
 
   Variables (X : Type) (P : rel₁ (list X)) (HP : monotone P).
 
@@ -1032,7 +1034,7 @@ Section af_quasi_morphism.
       We deal with the general case where
       neither T↑y₀ nor E is assumed decidable *)
 
-  (* First we get the ana(lysis) has a list of inverse images by ev *)
+  (* First we get the ana(lysis) as a list of inverse images by ev *)
 
   Let ana y := proj1_sig (is_ana_fin y).
 
