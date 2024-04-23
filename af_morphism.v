@@ -127,11 +127,11 @@ Module Type_bounded.
 
 End Type_bounded.
 
-(* Here the user can choose whether to compile type Type bounded versions
-   or the Prop bounded versions of the results (notice that only some results
+(* Here the user can choose whether to compile the Type bounded versions or
+   the Prop bounded versions of the results (notice that only some results
    depend on the choice Prop vs. Type for Base). Thanks to the generic
    notations defined above, the proofs scripts are "exactly the same",
-   but the Coq computed proof terms differ of course. *) 
+   but the Coq computed proof terms differ of course. *)
 Import Type_bounded (* Prop_bounded (* choose one *) *).
 
 (* Derived iff notation for the Base bounded connective. *)
