@@ -465,8 +465,8 @@ Section af_quasi_morphism_decidable.
     cut (af R⇓(λ x, ¬ E x)); [ | revert HR; apply af_af_sub_rel ].
     af rel morph (λ x y, ev (proj1_sig x) = proj1_sig y).
     + intros (y & Hy).
-      assert (∃ₜ x, is_ana y x ∧ₜ ¬ E x) as (x & H1 & H2);
-        [ | exists (exist _ x H2); auto ].
+      assert (∃ₜ x, is_ana y x ∧ₜ ¬ E x) as (x & ? & Hx);
+        [ | exists (exist _ x Hx); auto ].
       destruct (fin_choice_Base E (λ x, ¬ E x) (is_ana_fin y)) as [ | (? & ? & ?) ]; eauto.
       destruct Hy; eauto.
     + intros [] [] [] []; simpl.
@@ -479,7 +479,7 @@ End af_quasi_morphism_decidable.
 Check af_quasi_morphism_decidable.
 Print Assumptions af_quasi_morphism_decidable.
 
-(** For the general (non-decidable) case of the Quasi Morphism Theorem, 
+(** For the general (non-decidable) case of the Quasi Morphism Theorem,
     we need many more tools to achieve the proof. Mainly
     - besides extensions of the List library tools (mainly Forall2)
     - list based FANS and finitary combinatorial principle on FANS 
@@ -566,7 +566,7 @@ Notation FAN lw := (λ c, Forall2 (λ x l, x ∈ l) c lw).
 (** Explicit construction of the FAN on list (of lists). This is
     just needed to establish finiteness of the FAN. In the Kruskal-Higman
     project, this finiteness property is established using tools of 
-    the Kruskal-Finite project, and avoids the explicit list_prod/list_fan 
+    the Kruskal-Finite project, and avoids the explicit list_prod/list_fan
     completely. But importing those tools here would be overkill compared
     to the short explicit construction, of which we do not need many
     properties. *)
@@ -629,9 +629,8 @@ Eval compute in list_fan [[0;1];[];[2;3]]. *)
 
 (** Finitary choice and combinatorial principles, Prop bounded *)
 
-(* The same Ltac proof script as "list_choice_Base" above
-   but this one has to be Prop-bounded whatever choice 
-   for Base. *)
+(* The same Ltac proof script as "list_choice_Base" above but this
+   one has to be Prop-bounded whatever choice for Base. *)
 Lemma list_choice {X} (P Q : X → Prop) l :
         (∀x, x ∈ l → P x ∨ Q x)
       → (∀x, x ∈ l → P x) ∨ ∃x, x ∈ l ∧ Q x.
@@ -692,11 +691,11 @@ Qed.
 (** We introduce the bar inductive predicate for lists *)
 
 (* Do not confuse:
-   - "monotone" which refers to unary predicates over lists 
+   - "monotone" which refers to unary predicates over lists
    - with "mono" which refers to unary or binary predicates. *)
 Notation monotone P := (∀ x l, P l → P (x::l)).
 
-(* Lifting a predicate P : list _ → Prop with a list r *) 
+(* Lifting a predicate P : list _ → Prop with a list r *)
 Notation "P ⤉ r" := (λ l, P (l++r)).
 
 Section bar.
@@ -730,7 +729,7 @@ Section bar.
 
   Section bar_lifted_ind.
 
-    (** A generalized induction principle for lifted bar 
+    (** A generalized induction principle for lifted bar
         predicates, ie of the form (bar P)⤉m *)
 
     Variable (m : list X) (P : rel₁ (list X)) (Q : list X → Base)
@@ -820,7 +819,7 @@ Section FAN_theorem.
       In particular, we completely avoid using an explicit
       computation of the FAN like "list_fan" above
       and instead work directly with the FAN predicate.
-      Notice the finiteness of the FAN is not needed in this 
+      Notice the finiteness of the FAN is not needed in this
       proof, but is needed in the proof of the combinatorial
       principle list_combi_principle above. *)
 
@@ -829,7 +828,7 @@ Section FAN_theorem.
   Local Fact P_monotone_app l m : P m → P (l++m).
   Proof. induction l; simpl; auto. Qed.
 
-  (* P right-lifted by u holds over all choices seqs of lw 
+  (* P right-lifted by u holds over all choices seqs of lw
      Notice that when u is [], we simply get FAN lw ⊆₁ P *)
   Let Plift_on_FAN u lw := FAN lw ⊆₁ P⤉u.
 
@@ -914,8 +913,8 @@ Section good.
   Proof. split; inversion 1. Qed.
 
   Fact good_cons_inv R x l :
-         good R (x::l) ↔ (∃y, y ∈ l ∧ R y x) ∨ good R l.
-  Proof. split; [ inversion 1 | intros [ (? & ? & ?) | ] ]; eauto. Qed.
+         good R (x::l) ↔ good R l ∨ ∃y, y ∈ l ∧ R y x.
+  Proof. split; [ inversion 1 | intros [ | (? & ? & ?) ] ]; eauto. Qed.
 
   Hint Resolve good_app_left good_app_right : core.
 
@@ -924,10 +923,10 @@ Section good.
   Proof.
     split.
     + induction l as [ | x l IHl ]; simpl; auto.
-      intros [ (y & []%in_app_iff & ?) 
-             | [ | [ | (y & z & ? & ? & ?) ] ]%IHl ]%good_cons_inv; eauto.
-      * do 2 right; exists x, y; eauto.
-      * do 2 right; exists y, z; eauto.
+      intros [ [ | [ | (? & ? & ? & ? & ?) ] ]%IHl
+             | (? & []%in_app_iff & ?) ]%good_cons_inv; eauto.
+      * do 2 right; eexists; eauto.
+      * do 2 right; eexists; eauto.
     + intros [ | [ | (? & ? & (? & ? & ->)%in_split & ? & ?) ] ]; eauto.
       rewrite <- app_assoc; simpl; eauto.
   Qed.
@@ -959,7 +958,7 @@ Section good.
   Proof.
     intros l H.
     constructor 2; intros y; constructor 1.
-    apply good_app_inv in H as [ H | [ H | (u & v & H1 & [ <- | [] ] & H3) ] ].
+    apply good_app_inv in H as [ H | [ H | (u & ? & ? & [ <- | [] ] & ?) ] ].
     + constructor 2; revert H; apply good_mono; firstorder.
     + rewrite good_cons_inv, good_nil_inv in H; firstorder.
     + constructor 1 with u; simpl; auto.
@@ -1053,8 +1052,8 @@ Section af_quasi_morphism.
   Local Fact ev_good_or_exceptional lx :
          good R lx → good T (map ev lx) ∨ ∃x, x ∈ lx ∧ E x.
   Proof.
-    induction 1 as [ t2' t1' l H1 H2 | t1' l H IH ]; simpl.
-    + destruct ev_qmorph with (1 := H2); eauto.
+    induction 1 as [ ? ? ? ? H | ? ? ? IH ]; simpl.
+    + destruct ev_qmorph with (1 := H); eauto.
     + destruct IH as [ | (? & ? & ?) ]; simpl; eauto.
   Qed.
 
