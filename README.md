@@ -49,7 +49,7 @@ needed__ for the review) and then cleaning up and commenting more specifically.
 # Remarks
 
 Concerning the use of `Utf8` symbols in the code, we did not experience any display issues 
-with CoqIDE in any of the `opam` installed versions from `8.13.0` and `8.19.1`. Similarly,
+with CoqIDE in any of the [`opam` installed](https://coq.inria.fr/opam-using.html) versions from `8.13.0` and `8.19.1`. Similarly,
 viewing the code in the Chrome browser directly on GitHub looks fine on our systems. 
 Depending on the operating system, distribution or the IDE/browser, such issues might 
 possibly arise if OS installed `Utf8` symbols are incomplete/inconsistent with the IDE/browser. 
