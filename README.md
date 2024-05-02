@@ -22,7 +22,7 @@ It is intented to be read and executed within an IDE for Coq such as eg [CoqIDE]
 [vscoq](https://github.com/coq-community/vscoq). 
 
 Any version of Coq starting from `8.13.0` and 
-upto at least `8.19.0` should be ok to compile and/or review the file [`af_morphism.v`](af_morphism.v).
+upto at least `8.19.1` should be ok to compile and/or review the file [`af_morphism.v`](af_morphism.v).
 Since this is a single file, there is no need to pre-compile before reviewing. 
 
 For further information about Almost Full relations in Coq,
@@ -45,3 +45,15 @@ the following libraries may be of interest:
 The artifact file [`af_morphism.v`](af_morphism.v) was designed by
 extracting the necessary code from these libraries (so they are __not
 needed__ for the review) and then cleaning up and commenting more specifically.
+
+# Remarks
+
+Concerning the use of `Utf8` symbols in the code, we did not experience any display issues 
+with CoqIDE in any of the `opam` installed versions from `8.13.0` and `8.19.1`. Similarly,
+viewing the code in the Chrome browser directly on GitHub looks fine on our systems. 
+Depending on the operating system, distribution or the IDE/browser, such issues might 
+possibly arise if OS installed `Utf8` symbols are incomplete/inconsistent with the IDE/browser. 
+
+Anyway, to possibly avoid such issues, we suggest the usage of an `opam` installed version 
+of CoqIDE rather than the default OS version of the tool. This also allows to easily switch
+between different versions of Coq when developping general purpose code.
