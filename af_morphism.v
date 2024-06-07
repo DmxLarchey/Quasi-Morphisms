@@ -28,7 +28,7 @@
     is not considered in eg [5] possibly for the reasons that it involves
     both the FAN theorem for inductive bars and a finitary combinatorial
     principle (see eg [1] in proof of thm 7.1 p241). Another reason
-    is that the non-decidable case works only with negations free
+    is that the non-decidable case works only with negation free
     formulations of statements.
 
     This articfact is mostly standalone as it relies only on the 
@@ -54,7 +54,7 @@ Set Implicit Arguments.
     the semantics will be defined later.
 
     The connectives ⊥ₜ, ∨ₜ, ∧ₜ, ∃ₜ and ⇄ₜ with a (.)ₜ
-    subscripts are Base-bounded "FOL like" connectives
+    subscript are Base-bounded "FOL like" connectives
     where Base can be globally selected as either Prop
     or Type. They are used only for parsing, and not
     for display for reasons explained below. *)
